@@ -3,743 +3,323 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechAssets — Panel de Administración</title>
+  <title>Ingemedic — Panel de gestión</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .a-badge.gold{background:var(--amber-soft);color:#8a6420}
+    .tl-list{display:flex;flex-direction:column}
+    .tl-item{display:flex;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border)}
+    .tl-item:last-child{border-bottom:none}
+    .tl-dot-col{display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0}
+    .tl-dot{width:10px;height:10px;border-radius:50%;margin-top:3px;flex-shrink:0}
+    .tl-dot.green{background:var(--green)}.tl-dot.blue{background:var(--blue-s)}.tl-dot.red{background:var(--red)}.tl-dot.gold{background:var(--amber)}.tl-dot.gray{background:var(--text-light)}
+    .tl-line{width:1px;flex:1;background:var(--border);margin-top:4px}
+    .tl-body{flex:1}
+    .tl-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+    .tl-date{font-size:11px;color:var(--text-muted)}
+    .tl-desc{font-size:12px;color:var(--text-muted);line-height:1.55}
+    .tl-meta{font-size:11px;color:var(--text-light);margin-top:3px}
+    .tl-attach{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--blue-s);background:var(--blue-soft);padding:2px 8px;border-radius:4px;margin-top:4px;cursor:pointer}
+    .tl-attach svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+    .pad-wrap{border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
+    .pad-toolbar{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-muted)}
+    .pad-clear{background:none;border:none;cursor:pointer;font-size:12px;color:var(--text-muted);font-family:'DM Sans',sans-serif;text-decoration:underline}
+    canvas#sigPad{display:block;width:100%;height:130px;cursor:crosshair;touch-action:none;background:#fafaf8}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+    .detail-card{background:var(--surface2);border-radius:var(--radius-sm);overflow:hidden}
+    .detail-card-head{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+    .detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 14px;border-bottom:1px solid var(--border);font-size:13px;gap:12px}
+    .detail-row:last-child{border-bottom:none}
+    .detail-label{color:var(--text-muted);flex-shrink:0}
+    .detail-val{color:var(--text-main);text-align:right;word-break:break-all}
+    .bita-row{display:flex;align-items:flex-start;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border);font-size:12px}
+    .bita-row:last-child{border-bottom:none}
+    .bita-ico{width:24px;height:24px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .bita-ico svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .bita-ico.blue{background:var(--blue-soft);color:var(--blue-s)}.bita-ico.green{background:var(--green-soft);color:var(--green)}.bita-ico.yellow{background:var(--yellow-soft);color:var(--yellow)}.bita-ico.red{background:var(--red-soft);color:var(--red)}
+    .bita-text{flex:1;color:var(--text-main);line-height:1.5}
+    .bita-time{font-size:11px;color:var(--text-muted);white-space:nowrap}
+    .a-modal.wide{max-width:680px}
+    .a-modal-body{max-height:72vh;overflow-y:auto}
+    .upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:16px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;transition:border-color .2s}
+    .upload-zone:hover{border-color:var(--slate)}
+    .upload-zone svg{width:20px;height:20px;stroke:var(--text-light);fill:none;stroke-width:1.5;stroke-linecap:round;display:block;margin:0 auto 6px}
+    .mono{font-family:monospace;font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px}
+    @media(max-width:768px){.detail-grid{grid-template-columns:1fr}}
+  </style>
 </head>
 <body class="page-admin">
 
-<!-- SIDEBAR OVERLAY (mobile) -->
 <div class="a-sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
 <aside class="a-sidebar" id="sidebar">
   <div class="a-sidebar-logo">
     <div class="a-sidebar-logo-mark">
-      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
     </div>
     <div>
-      <div class="a-sidebar-name">TechAssets</div>
-      <div class="a-sidebar-role">Panel Admin</div>
+      <div class="a-sidebar-name">Ingemedic</div>
+      <div class="a-sidebar-role">Gestión de equipos</div>
     </div>
   </div>
-
   <nav class="a-nav">
     <div class="a-nav-group">
       <div class="a-nav-group-label">Principal</div>
-      <a href="#" class="a-nav-item active" onclick="setPage('dashboard', this)">
+      <a href="#" class="a-nav-item active" onclick="setPage('inventario',this);return false">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
-      </a>
-    </div>
-    <div class="a-nav-group">
-      <div class="a-nav-group-label">Gestión</div>
-      <a href="#" class="a-nav-item" onclick="setPage('inventario', this)">
-        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         Inventario
       </a>
-      <a href="#" class="a-nav-item" onclick="setPage('mantenimientos', this)">
+    </div>
+    <div class="a-nav-group">
+      <div class="a-nav-group-label">Operaciones</div>
+      <a href="#" class="a-nav-item" onclick="setPage('gestion',this);return false">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Gestión de equipos
+        <span class="badge-nav">2</span>
+      </a>
+      <a href="#" class="a-nav-item" onclick="setPage('mantenimientos',this);return false">
         <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         Mantenimientos
-        <span class="badge-nav">3</span>
-      </a>
-      <a href="#" class="a-nav-item" onclick="setPage('entregas', this)">
-        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        Entregas
-      </a>
-      <a href="#" class="a-nav-item" onclick="setPage('firmas', this)">
-        <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-        Firmas
-        <span class="badge-nav">5</span>
       </a>
     </div>
     <div class="a-nav-group">
-      <div class="a-nav-group-label">Configuración</div>
-      <a href="#" class="a-nav-item" onclick="setPage('usuarios', this)">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        Usuarios
-      </a>
-      <a href="#" class="a-nav-item" onclick="setPage('empresa', this)">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Empresa
+      <div class="a-nav-group-label">Sistema</div>
+      <a href="#" class="a-nav-item" onclick="setPage('bitacora',this);return false">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Bitácora
       </a>
     </div>
   </nav>
-
   <div class="a-sidebar-footer">
     <div class="a-sidebar-user">
-      <div class="a-avatar">JM</div>
+      <div class="a-avatar">LF</div>
       <div>
-        <div class="a-user-name">Juan Martínez</div>
+        <div class="a-user-name">Linda Flórez</div>
         <div class="a-user-role">Administrador</div>
       </div>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="a-main">
-
-  <!-- TOPBAR -->
   <header class="a-topbar">
     <div class="a-topbar-left">
       <button class="a-menu-toggle" onclick="toggleSidebar()">
         <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-      <div class="a-breadcrumb">
-        TechAssets &rsaquo; <strong id="breadcrumbPage">Dashboard</strong>
-      </div>
+      <div class="a-breadcrumb">Ingemedic &rsaquo; <strong id="breadcrumbPage">Inventario</strong></div>
     </div>
     <div class="a-topbar-right">
-      <button class="a-topbar-btn" title="Búsqueda">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      </button>
-      <button class="a-topbar-btn" title="Notificaciones">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="dot"></span>
-      </button>
-      <a href="landing.html" class="a-btn a-btn-ghost" style="font-size:12px;padding:7px 14px;">
+      <a href="landing.html" class="a-btn a-btn-ghost" style="font-size:12px;padding:6px 14px;">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
         Sitio web
       </a>
     </div>
   </header>
 
-  <!-- CONTENT WRAPPER -->
   <main class="a-content">
 
-    <!-- ══ DASHBOARD ══ -->
-    <div id="page-dashboard">
+    <!-- INVENTARIO -->
+    <div id="page-inventario">
       <div class="a-page-header">
-        <div class="a-page-title">Dashboard general</div>
-        <div class="a-page-sub">Resumen del estado actual del sistema</div>
+        <div>
+          <div class="a-page-title">Inventario de equipos</div>
+          <div class="a-page-sub">Equipos biomédicos de Ingemedic de Colombia S.A.S.</div>
+        </div>
+        <button class="a-btn a-btn-primary" onclick="openModal('modalNuevoEquipo')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo equipo
+        </button>
       </div>
-
-      <div class="a-alert yellow">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        3 mantenimientos vencidos requieren atención inmediata.
-      </div>
-
       <div class="a-metrics">
-        <div class="a-metric">
-          <div class="a-metric-top">
-            <div class="a-metric-label">Equipos totales</div>
-            <div class="a-metric-icon blue"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-          </div>
-          <div class="a-metric-value">148</div>
-          <div class="a-metric-footer"><span class="up">↑ 12</span> registrados este mes</div>
-        </div>
-        <div class="a-metric">
-          <div class="a-metric-top">
-            <div class="a-metric-label">En mantenimiento</div>
-            <div class="a-metric-icon yellow"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
-          </div>
-          <div class="a-metric-value">9</div>
-          <div class="a-metric-footer"><span class="down">3 vencidos</span> sin atender</div>
-        </div>
-        <div class="a-metric">
-          <div class="a-metric-top">
-            <div class="a-metric-label">Entregas pendientes</div>
-            <div class="a-metric-icon amber"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-          </div>
-          <div class="a-metric-value">5</div>
-          <div class="a-metric-footer">Sin firma de recibido</div>
-        </div>
-        <div class="a-metric">
-          <div class="a-metric-top">
-            <div class="a-metric-label">Firmas recolectadas</div>
-            <div class="a-metric-icon green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <div class="a-metric-value">312</div>
-          <div class="a-metric-footer"><span class="up">100%</span> digitales</div>
-        </div>
-      </div>
-
-      <div class="a-panels">
-        <!-- TABLA INVENTARIO -->
-        <div class="a-card">
-          <div class="a-card-head">
-            <div class="a-card-title">Equipos recientes</div>
-            <div class="a-tabs">
-              <button class="a-tab active" onclick="filterTab(this, 'todos')">Todos</button>
-              <button class="a-tab" onclick="filterTab(this, 'activos')">Activos</button>
-              <button class="a-tab" onclick="filterTab(this, 'mantenimiento')">Mant.</button>
-            </div>
-          </div>
-          <div class="a-card-body a-table-wrap">
-            <table class="a-table">
-              <thead>
-                <tr>
-                  <th>Equipo</th>
-                  <th>Asignado a</th>
-                  <th>Último mant.</th>
-                  <th>Estado</th>
-                  <th>Firma</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><div class="fw">Laptop Dell XPS</div><div class="sub">S/N: DX-0041</div></td>
-                  <td>Carlos M.</td>
-                  <td>10 abr 2026</td>
-                  <td><span class="a-badge green">Activo</span></td>
-                  <td><span class="a-badge green">Firmado</span></td>
-                </tr>
-                <tr>
-                  <td><div class="fw">Impresora HP M404</div><div class="sub">S/N: HP-0089</div></td>
-                  <td>Recepción</td>
-                  <td>—</td>
-                  <td><span class="a-badge yellow">Mant. pendiente</span></td>
-                  <td><span class="a-badge yellow">Pendiente</span></td>
-                </tr>
-                <tr>
-                  <td><div class="fw">Monitor LG 27"</div><div class="sub">S/N: LG-0102</div></td>
-                  <td>Ana Rodríguez</td>
-                  <td>02 mar 2026</td>
-                  <td><span class="a-badge green">Activo</span></td>
-                  <td><span class="a-badge green">Firmado</span></td>
-                </tr>
-                <tr>
-                  <td><div class="fw">Proyector Epson</div><div class="sub">S/N: EP-0017</div></td>
-                  <td>Sala juntas</td>
-                  <td>15 ene 2026</td>
-                  <td><span class="a-badge blue">En revisión</span></td>
-                  <td><span class="a-badge green">Firmado</span></td>
-                </tr>
-                <tr>
-                  <td><div class="fw">Tablet Samsung</div><div class="sub">S/N: SM-0053</div></td>
-                  <td>Sin asignar</td>
-                  <td>—</td>
-                  <td><span class="a-badge red">Baja</span></td>
-                  <td><span class="a-badge gray">N/A</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- PANEL DERECHO -->
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <!-- ACTIVIDAD -->
-          <div class="a-card">
-            <div class="a-card-head"><div class="a-card-title">Actividad reciente</div></div>
-            <div class="a-activity">
-              <div class="a-activity-item">
-                <div class="a-activity-dot green"></div>
-                <div><div class="a-activity-text">Entrega registrada — Laptop Dell a Carlos M.</div><div class="a-activity-time">hace 20 min</div></div>
-              </div>
-              <div class="a-activity-item">
-                <div class="a-activity-dot yellow"></div>
-                <div><div class="a-activity-text">Mantenimiento vencido — Impresora HP M404</div><div class="a-activity-time">hace 2 horas</div></div>
-              </div>
-              <div class="a-activity-item">
-                <div class="a-activity-dot blue"></div>
-                <div><div class="a-activity-text">Firma digital recolectada — Monitor LG (Ana R.)</div><div class="a-activity-time">ayer, 4:12 p.m.</div></div>
-              </div>
-              <div class="a-activity-item">
-                <div class="a-activity-dot green"></div>
-                <div><div class="a-activity-text">Nuevo equipo ingresado — Proyector Epson</div><div class="a-activity-time">ayer, 11:00 a.m.</div></div>
-              </div>
-            </div>
-          </div>
-          <!-- FIRMAS PENDIENTES -->
-          <div class="a-card">
-            <div class="a-card-head">
-              <div class="a-card-title">Firmas pendientes</div>
-              <span class="a-badge red" style="font-size:10px;">5</span>
-            </div>
-            <div class="a-pending">
-              <div class="a-pending-item">
-                <div><div class="a-pending-name">Impresora HP</div><div class="a-pending-sub">Recepción</div></div>
-                <button class="a-btn-sm primary" onclick="openFirmaModal('Impresora HP', 'Recepción')">Enviar</button>
-              </div>
-              <div class="a-pending-item">
-                <div><div class="a-pending-name">Tablet Lenovo</div><div class="a-pending-sub">Luis Pérez</div></div>
-                <button class="a-btn-sm primary" onclick="openFirmaModal('Tablet Lenovo', 'Luis Pérez')">Enviar</button>
-              </div>
-              <div class="a-pending-item">
-                <div><div class="a-pending-name">Mouse Logitech</div><div class="a-pending-sub">Contabilidad</div></div>
-                <button class="a-btn-sm primary" onclick="openFirmaModal('Mouse Logitech', 'Contabilidad')">Enviar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ INVENTARIO ══ -->
-    <div id="page-inventario" style="display:none;">
-      <div class="a-page-header">
-        <div class="a-page-title">Inventario de equipos</div>
-        <div class="a-page-sub">Gestión y registro de todos los activos de la empresa</div>
+        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">Total equipos</div><div class="a-metric-icon blue"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div></div><div class="a-metric-value" id="metTotal">—</div><div class="a-metric-footer">En el sistema</div></div>
+        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">En préstamo</div><div class="a-metric-icon green"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div><div class="a-metric-value" id="metPrestamo">—</div><div class="a-metric-footer">Con IPS activa</div></div>
+        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">Disponibles</div><div class="a-metric-icon amber"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="a-metric-value" id="metDisp">—</div><div class="a-metric-footer">Listos para préstamo</div></div>
+        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">Con novedad</div><div class="a-metric-icon" style="background:var(--red-soft);color:var(--red)"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div></div><div class="a-metric-value" id="metNovedad">—</div><div class="a-metric-footer">Dañados / fuera de servicio</div></div>
       </div>
       <div class="a-card">
         <div class="a-card-head">
           <div class="a-action-row">
-            <div class="a-search">
+            <div class="a-search" style="max-width:300px">
               <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input type="text" placeholder="Buscar equipo, S/N, responsable...">
+              <input type="text" id="searchInv" placeholder="Buscar equipo, código, serial, IPS..." oninput="renderInventario()">
             </div>
-            <select class="a-select">
-              <option>Todos los estados</option>
-              <option>Activo</option>
-              <option>Mantenimiento</option>
-              <option>En revisión</option>
-              <option>Baja</option>
+            <select class="a-select" id="filterEstado" onchange="renderInventario()">
+              <option value="">Todos los estados</option>
+              <option value="prestamo">En préstamo</option>
+              <option value="disponible">Disponible</option>
+              <option value="mantenimiento">En mantenimiento</option>
+              <option value="novedad">Con novedad</option>
             </select>
           </div>
-          <button class="a-btn a-btn-primary" onclick="openEquipoModal()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nuevo equipo
-          </button>
         </div>
         <div class="a-table-wrap">
           <table class="a-table">
-            <thead>
-              <tr>
-                <th>Equipo</th>
-                <th>Número de serie</th>
-                <th>Asignado a</th>
-                <th>Área</th>
-                <th>Fecha ingreso</th>
-                <th>Último mant.</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="fw">Laptop Dell XPS 15</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">DX-0041</code></td><td>Carlos Martínez</td><td>Sistemas</td><td>12 ene 2025</td><td>10 abr 2026</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Editar</button></td></tr>
-              <tr><td class="fw">Impresora HP M404</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">HP-0089</code></td><td>—</td><td>Recepción</td><td>3 mar 2024</td><td>—</td><td><span class="a-badge yellow">Mant. pendiente</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Editar</button></td></tr>
-              <tr><td class="fw">Monitor LG 27"</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">LG-0102</code></td><td>Ana Rodríguez</td><td>Diseño</td><td>20 jun 2024</td><td>02 mar 2026</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Editar</button></td></tr>
-              <tr><td class="fw">Proyector Epson X50</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">EP-0017</code></td><td>Sala juntas</td><td>Gerencia</td><td>5 ago 2023</td><td>15 ene 2026</td><td><span class="a-badge blue">En revisión</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Editar</button></td></tr>
-              <tr><td class="fw">Tablet Samsung A8</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">SM-0053</code></td><td>—</td><td>—</td><td>1 feb 2023</td><td>—</td><td><span class="a-badge red">Baja</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Ver</button></td></tr>
-              <tr><td class="fw">Laptop Lenovo ThinkPad</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">TP-0065</code></td><td>María García</td><td>Contabilidad</td><td>8 sep 2024</td><td>28 feb 2026</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Editar</button></td></tr>
-              <tr><td class="fw">Teléfono IP Cisco</td><td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">CI-0031</code></td><td>Recepción</td><td>Recepción</td><td>14 dic 2023</td><td>10 dic 2025</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost" onclick="openEquipoModal()">Editar</button></td></tr>
-            </tbody>
+            <thead><tr><th>Código</th><th>Equipo</th><th>Marca / Modelo</th><th>Serial</th><th>IPS</th><th>Estado</th><th style="text-align:center">Ficha</th></tr></thead>
+            <tbody id="tbodyInventario"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ══ MANTENIMIENTOS ══ -->
-    <div id="page-mantenimientos" style="display:none;">
+    <!-- GESTIÓN -->
+    <div id="page-gestion" style="display:none">
       <div class="a-page-header">
-        <div class="a-page-title">Control de mantenimientos</div>
-        <div class="a-page-sub">Preventivos y correctivos de todos los equipos</div>
+        <div>
+          <div class="a-page-title">Gestión de equipos</div>
+          <div class="a-page-sub">Registro de novedades: préstamos, devoluciones y daños</div>
+        </div>
+        <button class="a-btn a-btn-primary" onclick="openModal('modalNovedad')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Registrar novedad
+        </button>
       </div>
-      <div class="a-alert yellow">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        3 mantenimientos están vencidos. Programa una revisión lo antes posible.
+      <div class="a-alert yellow"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>2 préstamos pendientes de firma por parte de la IPS receptora.</div>
+      <div class="a-card">
+        <div class="a-card-head">
+          <div class="a-card-title">Novedades registradas</div>
+          <select class="a-select" id="filterNovTipo" onchange="renderNovedades()">
+            <option value="">Todos los tipos</option><option value="Adquisición">Adquisición</option><option value="Préstamo">Préstamo</option><option value="Devolución">Devolución</option><option value="Daño">Daño / Novedad</option>
+          </select>
+        </div>
+        <div class="a-table-wrap">
+          <table class="a-table">
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Equipo</th><th>IPS / Detalle</th><th>Por</th><th>Firma</th><th>Acciones</th></tr></thead>
+            <tbody id="tbodyNovedades"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANTENIMIENTOS -->
+    <div id="page-mantenimientos" style="display:none">
+      <div class="a-page-header">
+        <div>
+          <div class="a-page-title">Mantenimientos</div>
+          <div class="a-page-sub">Reportes técnicos de intervenciones a equipos biomédicos</div>
+        </div>
+        <button class="a-btn a-btn-primary" onclick="openModal('modalMantenimiento')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Registrar mantenimiento
+        </button>
       </div>
       <div class="a-card">
         <div class="a-card-head">
           <div class="a-card-title">Historial de mantenimientos</div>
-          <button class="a-btn a-btn-primary" onclick="openMantModal()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Registrar mantenimiento
-          </button>
+          <select class="a-select" id="filterMantTipo" onchange="renderMantenimientos()">
+            <option value="">Todos los tipos</option><option value="Preventivo">Preventivo</option><option value="Correctivo">Correctivo</option><option value="Revisión">Revisión</option><option value="Instalación">Instalación</option>
+          </select>
         </div>
         <div class="a-table-wrap">
           <table class="a-table">
-            <thead>
-              <tr>
-                <th>Equipo</th>
-                <th>Tipo</th>
-                <th>Técnico</th>
-                <th>Fecha realizado</th>
-                <th>Próximo</th>
-                <th>Estado</th>
-                <th>Observaciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="fw">Laptop Dell XPS</td><td>Preventivo</td><td>Pedro Álvarez</td><td>10 abr 2026</td><td>10 oct 2026</td><td><span class="a-badge green">Al día</span></td><td style="font-size:12px;color:var(--text-muted);">Limpieza general, cambio de pasta térmica</td></tr>
-              <tr><td class="fw">Impresora HP M404</td><td>Correctivo</td><td>—</td><td>—</td><td>Vencido</td><td><span class="a-badge red">Vencido</span></td><td style="font-size:12px;color:var(--text-muted);">Atasco de papel recurrente</td></tr>
-              <tr><td class="fw">Monitor LG 27"</td><td>Preventivo</td><td>Pedro Álvarez</td><td>02 mar 2026</td><td>02 sep 2026</td><td><span class="a-badge green">Al día</span></td><td style="font-size:12px;color:var(--text-muted);">Revisión de conexiones y calibración</td></tr>
-              <tr><td class="fw">Proyector Epson</td><td>Correctivo</td><td>Externo</td><td>15 ene 2026</td><td>15 jul 2026</td><td><span class="a-badge yellow">Próximo</span></td><td style="font-size:12px;color:var(--text-muted);">Cambio de lámpara proyector</td></tr>
-              <tr><td class="fw">Teléfono IP Cisco</td><td>Preventivo</td><td>Pedro Álvarez</td><td>10 dic 2025</td><td>Vencido</td><td><span class="a-badge red">Vencido</span></td><td style="font-size:12px;color:var(--text-muted);">—</td></tr>
-              <tr><td class="fw">Laptop Lenovo</td><td>Preventivo</td><td>Pedro Álvarez</td><td>28 feb 2026</td><td>28 ago 2026</td><td><span class="a-badge green">Al día</span></td><td style="font-size:12px;color:var(--text-muted);">Actualización de SO y drivers</td></tr>
-            </tbody>
+            <thead><tr><th>N° Reporte</th><th>Fecha</th><th>Equipo</th><th>Tipo</th><th>Técnico</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="tbodyMantenimientos"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ══ ENTREGAS ══ -->
-    <div id="page-entregas" style="display:none;">
+    <!-- BITÁCORA -->
+    <div id="page-bitacora" style="display:none">
       <div class="a-page-header">
-        <div class="a-page-title">Registro de entregas</div>
-        <div class="a-page-sub">Control de entrega de equipos a empleados o áreas</div>
+        <div>
+          <div class="a-page-title">Bitácora del sistema</div>
+          <div class="a-page-sub">Registro de todos los cambios y acciones realizados</div>
+        </div>
       </div>
       <div class="a-card">
-        <div class="a-card-head">
-          <div class="a-action-row">
-            <div class="a-search">
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input type="text" placeholder="Buscar entrega, empleado...">
-            </div>
-          </div>
-          <button class="a-btn a-btn-primary" onclick="openEntregaModal()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nueva entrega
-          </button>
-        </div>
-        <div class="a-table-wrap">
-          <table class="a-table">
-            <thead>
-              <tr>
-                <th>Equipo</th>
-                <th>Entregado a</th>
-                <th>Área</th>
-                <th>Fecha entrega</th>
-                <th>Condición</th>
-                <th>Firma</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="fw">Laptop Dell XPS</td><td>Carlos Martínez</td><td>Sistemas</td><td>12 ene 2025</td><td>Excelente</td><td><span class="a-badge green">Firmado</span></td><td><button class="a-btn-sm ghost">Ver acta</button></td></tr>
-              <tr><td class="fw">Monitor LG 27"</td><td>Ana Rodríguez</td><td>Diseño</td><td>20 jun 2024</td><td>Buena</td><td><span class="a-badge green">Firmado</span></td><td><button class="a-btn-sm ghost">Ver acta</button></td></tr>
-              <tr><td class="fw">Impresora HP M404</td><td>Recepción</td><td>Recepción</td><td>3 mar 2024</td><td>Buena</td><td><span class="a-badge yellow">Pendiente</span></td><td><button class="a-btn-sm primary" onclick="openFirmaModal('Impresora HP', 'Recepción')">Recoger firma</button></td></tr>
-              <tr><td class="fw">Laptop Lenovo ThinkPad</td><td>María García</td><td>Contabilidad</td><td>8 sep 2024</td><td>Excelente</td><td><span class="a-badge green">Firmado</span></td><td><button class="a-btn-sm ghost">Ver acta</button></td></tr>
-              <tr><td class="fw">Tablet Lenovo</td><td>Luis Pérez</td><td>Ventas</td><td>5 abr 2026</td><td>Nueva</td><td><span class="a-badge yellow">Pendiente</span></td><td><button class="a-btn-sm primary" onclick="openFirmaModal('Tablet Lenovo', 'Luis Pérez')">Recoger firma</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ FIRMAS ══ -->
-    <div id="page-firmas" style="display:none;">
-      <div class="a-page-header">
-        <div class="a-page-title">Firmas digitales</div>
-        <div class="a-page-sub">Control y seguimiento de firmas de entrega de equipos</div>
-      </div>
-      <div class="a-metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));">
-        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">Total firmadas</div><div class="a-metric-icon green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="a-metric-value">312</div><div class="a-metric-footer">Acumulado histórico</div></div>
-        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">Pendientes</div><div class="a-metric-icon yellow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="a-metric-value">5</div><div class="a-metric-footer">Sin recolectar</div></div>
-        <div class="a-metric"><div class="a-metric-top"><div class="a-metric-label">Este mes</div><div class="a-metric-icon blue"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div><div class="a-metric-value">28</div><div class="a-metric-footer"><span class="up">↑ 8</span> vs mes anterior</div></div>
-      </div>
-      <div class="a-card" style="margin-top:0;">
-        <div class="a-card-head">
-          <div class="a-card-title">Historial de firmas</div>
-          <button class="a-btn a-btn-primary" onclick="openFirmaModal('', '')">
-            <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-            Solicitar firma
-          </button>
-        </div>
-        <div class="a-table-wrap">
-          <table class="a-table">
-            <thead><tr><th>Equipo</th><th>Firmante</th><th>Cargo</th><th>Fecha solicitud</th><th>Fecha firma</th><th>Estado</th><th>Acción</th></tr></thead>
-            <tbody>
-              <tr><td class="fw">Laptop Dell XPS</td><td>Carlos Martínez</td><td>Jefe de Sistemas</td><td>12 ene 2025</td><td>12 ene 2025</td><td><span class="a-badge green">Firmado</span></td><td><button class="a-btn-sm ghost">Descargar</button></td></tr>
-              <tr><td class="fw">Monitor LG 27"</td><td>Ana Rodríguez</td><td>Diseñadora</td><td>20 jun 2024</td><td>21 jun 2024</td><td><span class="a-badge green">Firmado</span></td><td><button class="a-btn-sm ghost">Descargar</button></td></tr>
-              <tr><td class="fw">Impresora HP</td><td>Recepción</td><td>Recepcionista</td><td>3 mar 2024</td><td>—</td><td><span class="a-badge yellow">Pendiente</span></td><td><button class="a-btn-sm primary" onclick="openFirmaModal('Impresora HP', 'Recepción')">Reenviar</button></td></tr>
-              <tr><td class="fw">Tablet Lenovo</td><td>Luis Pérez</td><td>Vendedor</td><td>5 abr 2026</td><td>—</td><td><span class="a-badge yellow">Pendiente</span></td><td><button class="a-btn-sm primary" onclick="openFirmaModal('Tablet Lenovo', 'Luis Pérez')">Reenviar</button></td></tr>
-              <tr><td class="fw">Laptop Lenovo</td><td>María García</td><td>Contadora</td><td>8 sep 2024</td><td>9 sep 2024</td><td><span class="a-badge green">Firmado</span></td><td><button class="a-btn-sm ghost">Descargar</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ USUARIOS ══ -->
-    <div id="page-usuarios" style="display:none;">
-      <div class="a-page-header">
-        <div class="a-page-title">Usuarios del sistema</div>
-        <div class="a-page-sub">Gestión de acceso y roles</div>
-      </div>
-      <div class="a-card">
-        <div class="a-card-head">
-          <div class="a-card-title">Usuarios registrados</div>
-          <button class="a-btn a-btn-primary" onclick="openUsuarioModal()">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nuevo usuario
-          </button>
-        </div>
-        <div class="a-table-wrap">
-          <table class="a-table">
-            <thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Área</th><th>Último acceso</th><th>Estado</th><th>Acción</th></tr></thead>
-            <tbody>
-              <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="a-avatar" style="width:28px;height:28px;font-size:11px;">JM</div><div class="fw">Juan Martínez</div></div></td><td>juan@empresa.co</td><td><span class="a-badge blue">Administrador</span></td><td>Gerencia</td><td>Ahora mismo</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost">Editar</button></td></tr>
-              <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="a-avatar" style="width:28px;height:28px;font-size:11px;">PA</div><div class="fw">Pedro Álvarez</div></div></td><td>pedro@empresa.co</td><td><span class="a-badge yellow">Técnico</span></td><td>Sistemas</td><td>Hoy, 9:40 a.m.</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost">Editar</button></td></tr>
-              <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="a-avatar" style="width:28px;height:28px;font-size:11px;">AR</div><div class="fw">Ana Rodríguez</div></div></td><td>ana@empresa.co</td><td><span class="a-badge gray">Empleado</span></td><td>Diseño</td><td>Ayer, 5:15 p.m.</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost">Editar</button></td></tr>
-              <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="a-avatar" style="width:28px;height:28px;font-size:11px;">MG</div><div class="fw">María García</div></div></td><td>maria@empresa.co</td><td><span class="a-badge gray">Empleado</span></td><td>Contabilidad</td><td>Hace 3 días</td><td><span class="a-badge green">Activo</span></td><td><button class="a-btn-sm ghost">Editar</button></td></tr>
-              <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="a-avatar" style="width:28px;height:28px;font-size:11px;">LP</div><div class="fw">Luis Pérez</div></div></td><td>luis@empresa.co</td><td><span class="a-badge gray">Empleado</span></td><td>Ventas</td><td>Hace 1 semana</td><td><span class="a-badge red">Inactivo</span></td><td><button class="a-btn-sm ghost">Editar</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ EMPRESA ══ -->
-    <div id="page-empresa" style="display:none;">
-      <div class="a-page-header">
-        <div class="a-page-title">Configuración de empresa</div>
-        <div class="a-page-sub">Información general y ajustes del sistema</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="a-card">
-          <div class="a-card-head"><div class="a-card-title">Datos de la empresa</div></div>
-          <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
-            <div class="a-modal-field"><label>Nombre de la empresa</label><input type="text" value="TechAssets S.A.S."></div>
-            <div class="a-modal-field"><label>NIT</label><input type="text" value="900.123.456-7"></div>
-            <div class="a-modal-field"><label>Dirección</label><input type="text" value="Cra 15 #85-32, Bogotá"></div>
-            <div class="a-modal-field"><label>Teléfono</label><input type="text" value="+57 310 000 0000"></div>
-            <div class="a-modal-field"><label>Correo de contacto</label><input type="email" value="contacto@techassets.co"></div>
-            <div style="padding-top:4px;">
-              <button class="a-btn a-btn-primary" onclick="alert('Cambios guardados correctamente.')">Guardar cambios</button>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div class="a-card">
-            <div class="a-card-head"><div class="a-card-title">Estadísticas del sistema</div></div>
-            <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
-              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-muted);">Total equipos registrados</span><strong>148</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-muted);">Usuarios activos</span><strong>4</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-muted);">Mantenimientos registrados</span><strong>87</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-muted);">Firmas digitales</span><strong>312</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:13px;"><span style="color:var(--text-muted);">Activo desde</span><strong>Enero 2025</strong></div>
-            </div>
-          </div>
-          <div class="a-card">
-            <div class="a-card-head"><div class="a-card-title">Acciones del sistema</div></div>
-            <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
-              <button class="a-btn a-btn-ghost" style="justify-content:flex-start;width:100%;" onclick="alert('Exportando datos...')">
-                <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Exportar inventario completo
-              </button>
-              <button class="a-btn a-btn-ghost" style="justify-content:flex-start;width:100%;" onclick="alert('Generando reporte...')">
-                <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Generar reporte de mantenimientos
-              </button>
-              <a href="landing.html" class="a-btn a-btn-ghost" style="justify-content:flex-start;width:100%;text-decoration:none;">
-                <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                Ir al sitio web público
-              </a>
-            </div>
-          </div>
-        </div>
+        <div class="a-card-head"><div class="a-card-title">Registro de actividad</div></div>
+        <div id="listaBitacora"></div>
       </div>
     </div>
 
   </main>
 </div>
 
-<!-- ══ MODAL: NUEVO EQUIPO ══ -->
-<div class="a-modal-bg" id="modalEquipo">
-  <div class="a-modal">
-    <div class="a-modal-head">
-      <div class="a-modal-title">Registrar equipo</div>
-      <button class="a-modal-close" onclick="closeModal('modalEquipo')">✕</button>
-    </div>
-    <div class="a-modal-body">
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Nombre del equipo</label><input type="text" placeholder="Ej: Laptop Dell XPS 15"></div>
-        <div class="a-modal-field"><label>Número de serie</label><input type="text" placeholder="Ej: DX-0041"></div>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Marca / Modelo</label><input type="text" placeholder="Ej: Dell XPS 15"></div>
-        <div class="a-modal-field"><label>Fecha de ingreso</label><input type="date"></div>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Responsable</label><input type="text" placeholder="Nombre del empleado"></div>
-        <div class="a-modal-field"><label>Área</label>
-          <select><option>Seleccionar área</option><option>Sistemas</option><option>Contabilidad</option><option>Diseño</option><option>Ventas</option><option>Gerencia</option><option>Recepción</option></select>
-        </div>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Estado</label>
-          <select><option>Activo</option><option>Mantenimiento</option><option>En revisión</option><option>Baja</option></select>
-        </div>
-        <div class="a-modal-field"><label>Condición</label>
-          <select><option>Nueva</option><option>Excelente</option><option>Buena</option><option>Regular</option><option>Deteriorada</option></select>
-        </div>
-      </div>
-      <div class="a-modal-field"><label>Observaciones</label><textarea placeholder="Descripción adicional del equipo..."></textarea></div>
-    </div>
+<!-- MODAL FICHA -->
+<div class="a-modal-bg" id="modalFicha">
+  <div class="a-modal wide">
+    <div class="a-modal-head"><div class="a-modal-title" id="fichaTitle">Ficha del equipo</div><button class="a-modal-close" onclick="closeModal('modalFicha')">✕</button></div>
+    <div class="a-modal-body" id="fichaBody"></div>
     <div class="a-modal-footer">
-      <button class="a-btn a-btn-ghost" onclick="closeModal('modalEquipo')">Cancelar</button>
-      <button class="a-btn a-btn-primary" onclick="saveAndClose('modalEquipo', 'Equipo registrado correctamente.')">Guardar equipo</button>
+      <button class="a-btn a-btn-ghost" onclick="closeModal('modalFicha')">Cerrar</button>
+      <button class="a-btn a-btn-ghost" id="fichaEditBtn"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar ficha</button>
+      <button class="a-btn a-btn-primary" id="fichaPdfBtn"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Hoja de vida PDF</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: MANTENIMIENTO ══ -->
-<div class="a-modal-bg" id="modalMant">
-  <div class="a-modal">
-    <div class="a-modal-head">
-      <div class="a-modal-title">Registrar mantenimiento</div>
-      <button class="a-modal-close" onclick="closeModal('modalMant')">✕</button>
-    </div>
+<!-- MODAL EDITAR -->
+<div class="a-modal-bg" id="modalEditar">
+  <div class="a-modal wide">
+    <div class="a-modal-head"><div class="a-modal-title">Editar equipo</div><button class="a-modal-close" onclick="closeModal('modalEditar')">✕</button></div>
     <div class="a-modal-body">
-      <div class="a-modal-field"><label>Equipo</label>
-        <select><option>Seleccionar equipo</option><option>Laptop Dell XPS (DX-0041)</option><option>Impresora HP M404 (HP-0089)</option><option>Monitor LG 27" (LG-0102)</option><option>Proyector Epson (EP-0017)</option></select>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Tipo</label>
-          <select><option>Preventivo</option><option>Correctivo</option></select>
-        </div>
-        <div class="a-modal-field"><label>Técnico responsable</label><input type="text" placeholder="Nombre del técnico"></div>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Fecha realizado</label><input type="date"></div>
-        <div class="a-modal-field"><label>Próximo mantenimiento</label><input type="date"></div>
-      </div>
-      <div class="a-modal-field"><label>Observaciones</label><textarea placeholder="Trabajos realizados, piezas cambiadas, estado del equipo..."></textarea></div>
+      <div class="a-alert yellow" style="margin-bottom:0"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Los cambios quedan registrados en la bitácora con fecha y usuario.</div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Código inventario</label><input type="text" id="ed_codigo"></div><div class="a-modal-field"><label>Nombre del equipo</label><input type="text" id="ed_nombre"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Marca</label><input type="text" id="ed_marca"></div><div class="a-modal-field"><label>Modelo</label><input type="text" id="ed_modelo"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Serial</label><input type="text" id="ed_serial"></div><div class="a-modal-field"><label>Registro INVIMA</label><input type="text" id="ed_invima"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Lote</label><input type="text" id="ed_lote"></div><div class="a-modal-field"><label>Fecha adquisición</label><input type="date" id="ed_fecha"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Proveedor</label><input type="text" id="ed_proveedor"></div><div class="a-modal-field"><label>Valor (COP)</label><input type="number" id="ed_valor"></div></div>
+      <div class="a-modal-field"><label>Motivo del cambio *</label><textarea id="ed_motivo" placeholder="Describe qué se corrigió y por qué..."></textarea></div>
     </div>
-    <div class="a-modal-footer">
-      <button class="a-btn a-btn-ghost" onclick="closeModal('modalMant')">Cancelar</button>
-      <button class="a-btn a-btn-primary" onclick="saveAndClose('modalMant', 'Mantenimiento registrado correctamente.')">Guardar</button>
-    </div>
+    <div class="a-modal-footer"><button class="a-btn a-btn-ghost" onclick="closeModal('modalEditar')">Cancelar</button><button class="a-btn a-btn-primary" onclick="guardarEdicion()">Guardar cambios</button></div>
   </div>
 </div>
 
-<!-- ══ MODAL: ENTREGA ══ -->
-<div class="a-modal-bg" id="modalEntrega">
-  <div class="a-modal">
-    <div class="a-modal-head">
-      <div class="a-modal-title">Registrar entrega</div>
-      <button class="a-modal-close" onclick="closeModal('modalEntrega')">✕</button>
-    </div>
+<!-- MODAL NUEVO EQUIPO -->
+<div class="a-modal-bg" id="modalNuevoEquipo">
+  <div class="a-modal wide">
+    <div class="a-modal-head"><div class="a-modal-title">Registrar nuevo equipo</div><button class="a-modal-close" onclick="closeModal('modalNuevoEquipo')">✕</button></div>
     <div class="a-modal-body">
-      <div class="a-modal-field"><label>Equipo</label>
-        <select><option>Seleccionar equipo</option><option>Laptop Dell XPS (DX-0041)</option><option>Impresora HP M404 (HP-0089)</option><option>Monitor LG 27" (LG-0102)</option><option>Proyector Epson (EP-0017)</option></select>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Entregado a</label><input type="text" placeholder="Nombre del empleado"></div>
-        <div class="a-modal-field"><label>Área</label>
-          <select><option>Seleccionar área</option><option>Sistemas</option><option>Contabilidad</option><option>Diseño</option><option>Ventas</option><option>Gerencia</option><option>Recepción</option></select>
-        </div>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Fecha de entrega</label><input type="date"></div>
-        <div class="a-modal-field"><label>Condición al entregar</label>
-          <select><option>Nueva</option><option>Excelente</option><option>Buena</option><option>Regular</option></select>
-        </div>
-      </div>
-      <div class="a-modal-field"><label>Observaciones</label><textarea placeholder="Accesorios incluidos, estado del equipo, notas..."></textarea></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Código inventario *</label><input type="text" id="ne_codigo" placeholder="Ej: RL036"></div><div class="a-modal-field"><label>Nombre del equipo *</label><input type="text" id="ne_nombre" placeholder="Ej: Concentrador de oxígeno"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Marca</label><input type="text" id="ne_marca" placeholder="Ej: Respironics"></div><div class="a-modal-field"><label>Modelo</label><input type="text" id="ne_modelo" placeholder="Ej: EverFlo"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Serial</label><input type="text" id="ne_serial" placeholder="Número de serie"></div><div class="a-modal-field"><label>Registro INVIMA</label><input type="text" id="ne_invima" placeholder="Opcional"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Lote</label><input type="text" id="ne_lote" placeholder="Opcional"></div><div class="a-modal-field"><label>Fecha de adquisición</label><input type="date" id="ne_fecha"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Proveedor</label><input type="text" id="ne_proveedor" placeholder="Opcional"></div><div class="a-modal-field"><label>Valor (COP)</label><input type="number" id="ne_valor" placeholder="Opcional"></div></div>
+      <div class="a-modal-field"><label>Observaciones</label><textarea id="ne_obs" placeholder="Estado del equipo, accesorios incluidos, etc."></textarea></div>
+      <div class="a-modal-field"><label>Adjuntos (soporte de compra)</label><div class="upload-zone" onclick="alert('En producción se podrán adjuntar archivos.')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Haz clic para adjuntar archivos<div style="font-size:11px;margin-top:2px;color:var(--text-light)">PDF, imágenes, documentos</div></div></div>
     </div>
-    <div class="a-modal-footer">
-      <button class="a-btn a-btn-ghost" onclick="closeModal('modalEntrega')">Cancelar</button>
-      <button class="a-btn a-btn-primary" onclick="saveAndClose('modalEntrega', 'Entrega registrada. Ahora puedes solicitar la firma.')">Registrar entrega</button>
-    </div>
+    <div class="a-modal-footer"><button class="a-btn a-btn-ghost" onclick="closeModal('modalNuevoEquipo')">Cancelar</button><button class="a-btn a-btn-primary" onclick="registrarEquipo()">Registrar equipo</button></div>
   </div>
 </div>
 
-<!-- ══ MODAL: FIRMA ══ -->
-<div class="a-modal-bg" id="modalFirma">
-  <div class="a-modal">
-    <div class="a-modal-head">
-      <div class="a-modal-title">Solicitar firma digital</div>
-      <button class="a-modal-close" onclick="closeModal('modalFirma')">✕</button>
-    </div>
+<!-- MODAL NOVEDAD -->
+<div class="a-modal-bg" id="modalNovedad">
+  <div class="a-modal wide">
+    <div class="a-modal-head"><div class="a-modal-title">Registrar novedad</div><button class="a-modal-close" onclick="closeModal('modalNovedad')">✕</button></div>
     <div class="a-modal-body">
-      <div class="a-modal-field"><label>Equipo</label><input type="text" id="firmaEquipo" placeholder="Nombre del equipo"></div>
-      <div class="a-modal-field"><label>Firmante</label><input type="text" id="firmaPersona" placeholder="Nombre del empleado o área"></div>
-      <div class="a-modal-field"><label>Correo del firmante</label><input type="email" placeholder="correo@empresa.co"></div>
-      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--text-muted);">
-        Se enviará un enlace al correo del firmante para que pueda firmar digitalmente desde su celular o computador.
+      <div class="a-modal-row">
+        <div class="a-modal-field"><label>Tipo de novedad *</label><select id="nov_tipo" onchange="toggleNovedad()"><option value="">Seleccionar tipo</option><option value="Préstamo">Préstamo — Ingemedic entrega a IPS</option><option value="Devolución">Devolución — IPS retorna a Ingemedic</option><option value="Daño">Daño / Novedad — Reporte de problema</option></select></div>
+        <div class="a-modal-field"><label>Equipo *</label><select id="nov_equipo"></select></div>
       </div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Fecha *</label><input type="date" id="nov_fecha"></div><div class="a-modal-field"><label>Ciudad</label><input type="text" id="nov_ciudad" placeholder="Ej: Valledupar"></div></div>
+      <div class="a-modal-field" id="nov_ips_wrap"><label>IPS responsable</label><input type="text" id="nov_ips" placeholder="Ej: Cajacopi, Cuidarte, Policía Nacional..."></div>
+      <div class="a-modal-field"><label>Observaciones</label><textarea id="nov_obs" placeholder="Estado del equipo, accesorios entregados, etc."></textarea></div>
+      <div class="a-modal-field"><label>Adjuntos</label><div class="upload-zone" onclick="alert('En producción se podrán adjuntar archivos.')"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>Adjuntar soporte, foto o documento</div></div>
+      <div class="a-modal-field" id="nov_firma_wrap"><label>Firma de recibido</label><div class="pad-wrap"><div class="pad-toolbar"><span>Firmar con el dedo o mouse</span><button class="pad-clear" onclick="clearPad()">Limpiar</button></div><canvas id="sigPad" width="600" height="130"></canvas></div></div>
     </div>
-    <div class="a-modal-footer">
-      <button class="a-btn a-btn-ghost" onclick="closeModal('modalFirma')">Cancelar</button>
-      <button class="a-btn a-btn-primary" onclick="saveAndClose('modalFirma', 'Solicitud de firma enviada al correo.')">Enviar solicitud</button>
-    </div>
+    <div class="a-modal-footer"><button class="a-btn a-btn-ghost" onclick="closeModal('modalNovedad')">Cancelar</button><button class="a-btn a-btn-primary" onclick="registrarNovedad()">Registrar y generar PDF</button></div>
   </div>
 </div>
 
-<!-- ══ MODAL: USUARIO ══ -->
-<div class="a-modal-bg" id="modalUsuario">
-  <div class="a-modal">
-    <div class="a-modal-head">
-      <div class="a-modal-title">Nuevo usuario</div>
-      <button class="a-modal-close" onclick="closeModal('modalUsuario')">✕</button>
-    </div>
+<!-- MODAL MANTENIMIENTO -->
+<div class="a-modal-bg" id="modalMantenimiento">
+  <div class="a-modal wide">
+    <div class="a-modal-head"><div class="a-modal-title">Registrar mantenimiento</div><button class="a-modal-close" onclick="closeModal('modalMantenimiento')">✕</button></div>
     <div class="a-modal-body">
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Nombre completo</label><input type="text" placeholder="Nombre del usuario"></div>
-        <div class="a-modal-field"><label>Correo corporativo</label><input type="email" placeholder="correo@empresa.co"></div>
-      </div>
-      <div class="a-modal-row">
-        <div class="a-modal-field"><label>Rol</label>
-          <select><option>Empleado</option><option>Técnico</option><option>Administrador</option></select>
-        </div>
-        <div class="a-modal-field"><label>Área</label>
-          <select><option>Seleccionar área</option><option>Sistemas</option><option>Contabilidad</option><option>Diseño</option><option>Ventas</option><option>Gerencia</option><option>Recepción</option></select>
-        </div>
-      </div>
-      <div class="a-modal-field"><label>Contraseña temporal</label><input type="password" placeholder="Mín. 8 caracteres"></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>N° de reporte</label><input type="text" id="mt_num" readonly style="background:var(--surface2)"></div><div class="a-modal-field"><label>Fecha *</label><input type="date" id="mt_fecha"></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Equipo *</label><select id="mt_equipo"></select></div><div class="a-modal-field"><label>Tipo de servicio</label><select id="mt_tipo"><option value="Preventivo">Preventivo</option><option value="Correctivo">Correctivo</option><option value="Revisión">Revisión</option><option value="Instalación">Instalación</option><option value="Llamado de emergencia">Llamado de emergencia</option></select></div></div>
+      <div class="a-modal-row"><div class="a-modal-field"><label>Técnico responsable *</label><input type="text" id="mt_tecnico" placeholder="Nombre del ingeniero o técnico"></div><div class="a-modal-field"><label>Estado del equipo</label><select id="mt_estado"><option value="B">Bueno (B)</option><option value="R">Regular (R)</option><option value="M">Malo (M)</option></select></div></div>
+      <div class="a-modal-field"><label>Observaciones del cliente</label><textarea id="mt_obs_cliente" placeholder="¿Qué reportó la IPS o el cliente?"></textarea></div>
+      <div class="a-modal-field"><label>Actividades realizadas</label><textarea id="mt_actividades" placeholder="Trabajos realizados, sistemas revisados, pruebas efectuadas..."></textarea></div>
+      <div class="a-modal-field"><label>Repuestos instalados</label><textarea id="mt_repuestos" placeholder="Lista de piezas cambiadas o suministradas (opcional)"></textarea></div>
+      <div class="a-modal-field"><label>Adjuntos</label><div class="upload-zone" onclick="alert('En producción se podrán adjuntar archivos.')"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>Adjuntar evidencia fotográfica o documento</div></div>
     </div>
-    <div class="a-modal-footer">
-      <button class="a-btn a-btn-ghost" onclick="closeModal('modalUsuario')">Cancelar</button>
-      <button class="a-btn a-btn-primary" onclick="saveAndClose('modalUsuario', 'Usuario creado. Se envió el acceso por correo.')">Crear usuario</button>
-    </div>
+    <div class="a-modal-footer"><button class="a-btn a-btn-ghost" onclick="closeModal('modalMantenimiento')">Cancelar</button><button class="a-btn a-btn-primary" onclick="registrarMantenimiento()">Registrar y generar PDF</button></div>
   </div>
 </div>
 
-<script>
-  const pages = ['dashboard','inventario','mantenimientos','entregas','firmas','usuarios','empresa'];
-  const pageNames = { dashboard:'Dashboard', inventario:'Inventario', mantenimientos:'Mantenimientos', entregas:'Entregas', firmas:'Firmas digitales', usuarios:'Usuarios', empresa:'Configuración' };
+<script src="admin.js"></script>
 
-  function setPage(id, el) {
-    pages.forEach(p => {
-      const el2 = document.getElementById('page-' + p);
-      if (el2) el2.style.display = 'none';
-    });
-    const target = document.getElementById('page-' + id);
-    if (target) target.style.display = '';
-    document.querySelectorAll('.a-nav-item').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
-    document.getElementById('breadcrumbPage').textContent = pageNames[id] || id;
-    if (window.innerWidth <= 768) closeSidebar();
-    return false;
-  }
-
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('show');
-  }
-
-  function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('show');
-  }
-
-  function filterTab(el, filter) {
-    el.closest('.a-tabs').querySelectorAll('.a-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  function openEquipoModal() { document.getElementById('modalEquipo').classList.add('open'); }
-  function openMantModal()   { document.getElementById('modalMant').classList.add('open'); }
-  function openEntregaModal(){ document.getElementById('modalEntrega').classList.add('open'); }
-  function openUsuarioModal(){ document.getElementById('modalUsuario').classList.add('open'); }
-
-  function openFirmaModal(equipo, persona) {
-    document.getElementById('firmaEquipo').value = equipo || '';
-    document.getElementById('firmaPersona').value = persona || '';
-    document.getElementById('modalFirma').classList.add('open');
-  }
-
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-  function saveAndClose(id, msg) {
-    closeModal(id);
-    setTimeout(() => alert(msg), 100);
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.a-modal-bg.open').forEach(m => m.classList.remove('open'));
-    }
-  });
-
-  document.querySelectorAll('.a-modal-bg').forEach(bg => {
-    bg.addEventListener('click', e => {
-      if (e.target === bg) bg.classList.remove('open');
-    });
-  });
-</script>
 </body>
 </html>
